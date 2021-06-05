@@ -7,5 +7,6 @@ namespace BattleShipWebClient.Controllers
 {
     public class BattleshipGameController
     {
+
     }
 }
