@@ -14,7 +14,7 @@
             padding:10px;
             border: 0px;
             box-shadow:white 1px 1px;
-            margin-top:25%;
+            margin-top:40%;
             width:100px;
         }
     </style>
@@ -22,12 +22,12 @@
 </head>
 <body style="background-image:url('Images/home_background.jpg'); background-repeat:no-repeat;background-size:cover;">
     <form id="form1" runat="server">
-        
-        <div class="row">
+        <div class="container">
+            <div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4">
                 <center>
-                    <img src="Images/battleship_banner.png" width="500" height="150"/>
+                    <img src="Images/battleship_banner.png" width="500" height="150" style="margin-top:50%;"/>
                 </center>
                 
             </div>
@@ -37,11 +37,13 @@
             <div class="col-md-4"></div>
             <div class="col-md-4">
                 <center>
-                <asp:Button ID="btnPlay" runat="server" Text="Play" Font-Bold="True" Font-Names="ROG Fonts" CssClass="btn btn-success roundedBorder" />
+                <asp:Button ID="btnPlay" runat="server" Text="Play" Font-Bold="True" Font-Names="ROG Fonts" CssClass="btn btn-success roundedBorder" OnClick="btnPlay_Click" />
                     </center>
             </div>
             <div class="col-md-4"></div>
         </div>
+        </div>
+        
     </form>
 </body>
 </html>

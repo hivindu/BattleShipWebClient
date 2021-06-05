@@ -13,5 +13,10 @@ namespace BattleShipWebClient
         {
 
         }
+
+        protected void btnPlay_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("PlayBoard.aspx");
+        }
     }
 }

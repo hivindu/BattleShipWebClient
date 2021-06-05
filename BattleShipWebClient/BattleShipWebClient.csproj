@@ -68,8 +68,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\battleship_banner.png" />
+    <Content Include="Images\divback.jpg" />
     <Content Include="Images\home_background.jpg" />
+    <Content Include="Images\playBoard_background.jpg" />
     <Content Include="index.aspx" />
+    <Content Include="PlayBoard.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +86,13 @@
     </Compile>
     <Compile Include="Models\ResponseBody.cs" />
     <Compile Include="Models\Ships.cs" />
+    <Compile Include="PlayBoard.aspx.cs">
+      <DependentUpon>PlayBoard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PlayBoard.aspx.designer.cs">
+      <DependentUpon>PlayBoard.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
