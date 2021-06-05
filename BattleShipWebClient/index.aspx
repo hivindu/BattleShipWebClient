@@ -4,11 +4,43 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Battleship</title>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        .roundedBorder {
+            border-radius: 25px;
+            padding:10px;
+            border: 0px;
+            box-shadow:white 1px 1px;
+            margin-top:25%;
+            width:100px;
+        }
+    </style>
+
 </head>
-<body style="background-image:url('')">
+<body style="background-image:url('Images/home_background.jpg'); background-repeat:no-repeat;background-size:cover;">
     <form id="form1" runat="server">
-        <div>
+        
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <center>
+                    <img src="Images/battleship_banner.png" width="500" height="150"/>
+                </center>
+                
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <center>
+                <asp:Button ID="btnPlay" runat="server" Text="Play" Font-Bold="True" Font-Names="ROG Fonts" CssClass="btn btn-success roundedBorder" />
+                    </center>
+            </div>
+            <div class="col-md-4"></div>
         </div>
     </form>
 </body>
