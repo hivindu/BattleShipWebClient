@@ -6,6 +6,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Drawing;
+
 
 namespace BattleShipWebClient
 {
@@ -30,9 +32,9 @@ namespace BattleShipWebClient
                 EnimiesGrid = new Button[10, 10];
                 ShipLocationPlayer = new bool[10, 10];
                 ShipLocationEnimy = new bool[10, 10];
-                CreateEnimiesGrid();
+                CreateEnemiesGrid();
                 CreatePlayerGrid();
-                lblhint.Text = "Please select 3 locations on your grid";
+                lblhint.Text = "Please select 3 locations on your grid ( 2nd POINT MUST BE SELECT AFTER 5 POINTS FROM THE 1st POINT IN HORIZONTALLY OR VERTICALLY!)";
                 enimy_panel.Visible = false;
                 Session["EnimiesGrid"] = EnimiesGrid;
                 Session["Player"] = PlayerGrid;
@@ -43,7 +45,7 @@ namespace BattleShipWebClient
                 ship = (Ships)Session["Ship"];
                 EnimiesGrid = (Button[,])Session["EnimiesGrid"];
                 PlayerGrid = (Button[,])Session["Player"];
-               CreateEnimiesGrid();
+                CreateEnemiesGrid();
                 CreatePlayerGrid();
             }
             controller = new BattleshipGameController();
@@ -57,6 +59,7 @@ namespace BattleShipWebClient
 
         protected void A1_Click(object sender, EventArgs e)
         {
+            bool res = false;
             if (IsPostBack)
             {
                 Shis = (int)Session["Ships"];
@@ -64,7 +67,7 @@ namespace BattleShipWebClient
                 {
                     var button = (Button)sender;
                     button.Enabled = false;
-                    button.BackColor = System.Drawing.Color.Orange;
+                    button.BackColor = Color.Orange;
 
                     string id = button.ClientID;
                     switch (Shis)
@@ -72,7 +75,19 @@ namespace BattleShipWebClient
                         case 3:
                             ship.Battleship = FindIndex(id); break;
                         case 2:
-                            ship.Ship1 = FindIndex(id); break;
+                            res =CheckDistence(id);
+                            if (res != true)
+                            {
+                                Shis = 3;
+                                button.Enabled = true;
+                                button.BackColor = Color.White;
+                                Page.ClientScript.RegisterStartupScript(this.GetType(), "callinvalidIndex", "invalidIndex()", true);
+                                
+                            }
+                            else {
+                                ship.Ship1 = FindIndex(id); 
+                            }
+                            break;
                         case 1:
                             ship.Ship2 = FindIndex(id); break;
                     }
@@ -142,7 +157,7 @@ namespace BattleShipWebClient
         }
 
         //Generate Enimies button grid
-        private void CreateEnimiesGrid()
+        private void CreateEnemiesGrid()
         {
             var buttonLetter = "";
             for (int r = 0; r < 10; r++)
@@ -205,5 +220,61 @@ namespace BattleShipWebClient
 
             return values;
         }
+
+        private bool CheckDistence(string id)
+        {
+            bool res = false;
+            int[] battleShipIndexs = ship.Battleship;
+            int row = battleShipIndexs[0];
+            int column = battleShipIndexs[1];
+            int rowCount = 0;
+            int columnCount = 0;
+            string col;
+            for (int r = 0; r < 10; r++)
+            {
+                for (int c = 0; c < 10; c++)
+                {
+                    col = PlayerGrid[r, c].ClientID;
+                    if (col == id)
+                    {
+                        
+                        if ((row + 1) > (r + 1))
+                        {
+                            rowCount = (row + 1) - (r + 1);
+                        }
+                        else {
+                            rowCount = (r + 1) - (row + 1);
+                        }
+
+                        if ((column + 1) > (c + 1))
+                        {
+                            columnCount = column - c;
+                        }
+                        else {
+                            columnCount = (c+1) - (column+1);
+                        }
+
+
+                        if (row == r && columnCount < 4)
+                        {
+                            res = false;
+                        }
+                        else 
+                        {
+                            if (column == c && rowCount < 4)
+                            {
+                                res = false;
+                            }
+                            else
+                            {
+                                res = true;
+                            }
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
     }
 }

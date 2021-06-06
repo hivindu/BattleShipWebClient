@@ -26,7 +26,7 @@ namespace BattleShipWebClient.Controllers
             client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:8000");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response = client.PostAsJsonAsync("/api​/Battleship​/GenerateUserShips​/player", ships).Result;
+            HttpResponseMessage response = client.PostAsJsonAsync("/api​/Battleship​/GenerateUserShips​", ships).Result;
             if (response.IsSuccessStatusCode)
             {
                 var playerShips = response.Content.ReadAsStringAsync().Result;
@@ -39,13 +39,13 @@ namespace BattleShipWebClient.Controllers
 
             return ship;
         }
-        public Ships GetEnimiesLocation()
+        public Ships GetEnemiesLocation()
         {
             ship = new Ships();
             client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:8000");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response = client.GetAsync("/api​/Battleship​/GenerateUserShips​/player").Result;
+            HttpResponseMessage response = client.GetAsync("/api/Battleship/GetEnemies​").Result;
             if (response.IsSuccessStatusCode)
             {
                 var playerShips = response.Content.ReadAsStringAsync().Result;
@@ -59,13 +59,13 @@ namespace BattleShipWebClient.Controllers
             return ship;
         }
 
-        public ResponseBody ShotOnEnimy(int point, Ships enimiShips)
+        public ResponseBody ShotOnEnemy(int point, Ships enimiShips)
         {
             _reponse = new ResponseBody();
             client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:8000");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response = client.PutAsJsonAsync("/api/Battleship/ShotEnimy/distroyerShip/value/"+point+"", enimiShips).Result;
+            HttpResponseMessage response = client.PutAsJsonAsync("/api/Battleship/ShotEnemy/"+point+"", enimiShips).Result;
             if (response.IsSuccessStatusCode)
             {
                 var playerShips = response.Content.ReadAsStringAsync().Result;
@@ -79,7 +79,26 @@ namespace BattleShipWebClient.Controllers
             return _reponse;
         }
 
+        public ResponseBody ShotOnPlayer(Ships playerShips)
+        {
+            _reponse = new ResponseBody();
 
+            client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:8000");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.PutAsJsonAsync("/api/Battleship/ShotOnUser", playerShips).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var location = response.Content.ReadAsStringAsync().Result;
+                _reponse = JsonConvert.DeserializeObject<ResponseBody>(location);
+            }
+            else
+            {
+                _reponse = null;
+            }
+
+            return _reponse;
+        }
 
 
     }

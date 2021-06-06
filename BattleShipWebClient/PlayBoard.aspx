@@ -14,7 +14,11 @@
         margin-right:2px;
         }
     </style>
-    
+    <script type="text/javascript" language="javascript">
+        function invalidIndex() {
+            alert("ERROR! You must Keep 5 POINTS of distence between 1st node and 2nd point");
+        }
+    </script>
 </head>
 <body style="background-image:url('Images/playBoard_background.jpg'); background-repeat:no-repeat;background-size:cover;">
     
