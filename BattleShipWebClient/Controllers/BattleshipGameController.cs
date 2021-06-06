@@ -79,7 +79,7 @@ namespace BattleShipWebClient.Controllers
             return _reponse;
         }
 
-        public ResponseBody ShotOnPlayer(Ships playerShips)
+        public static ResponseBody ShotOnPlayer(Ships playerShips)
         {
             _reponse = new ResponseBody();
 

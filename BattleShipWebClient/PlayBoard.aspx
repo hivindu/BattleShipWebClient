@@ -14,7 +14,7 @@
         margin-right:2px;
         }
     </style>
-    <script type="text/javascript" language="javascript">
+    <script type="text/javascript">
         function invalidIndex() {
             alert("ERROR! You must Keep 5 POINTS of distence between 1st node and 2nd point");
         }
