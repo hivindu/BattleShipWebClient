@@ -25,6 +25,7 @@ namespace BattleShipWebClient.Controllers
             ship = new Ships();
             Ships userShips = ships;
             client = new HttpClient();
+
             try {
                 client.BaseAddress = new Uri("http://localhost:8000");
                 var response = client.PostAsJsonAsync("api/Battleship/GenerateUserShips", userShips).Result;
@@ -50,14 +51,22 @@ namespace BattleShipWebClient.Controllers
         {
             ship = new Ships();
             client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:8000");
-            var response = client.GetAsync("api/Battleship/GetEnemies").Result;
-            if (response.IsSuccessStatusCode)
+
+            try
             {
-                var playerShips = response.Content.ReadAsStringAsync().Result;
-                ship = JsonConvert.DeserializeObject<Ships>(playerShips);
+                client.BaseAddress = new Uri("http://localhost:8000");
+                var response = client.GetAsync("api/Battleship/GetEnemies").Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var playerShips = response.Content.ReadAsStringAsync().Result;
+                    ship = JsonConvert.DeserializeObject<Ships>(playerShips);
+                }
+                else
+                {
+                    ship = null;
+                }
             }
-            else
+            catch (Exception ex) 
             {
                 ship = null;
             }
@@ -69,14 +78,22 @@ namespace BattleShipWebClient.Controllers
         {
             _reponse = new ResponseBody();
             client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:8000");
-            HttpResponseMessage response = client.PutAsJsonAsync("api/Battleship/ShotEnemy/"+point+"", enimiShips).Result;
-            if (response.IsSuccessStatusCode)
+
+            try
             {
-                var playerShips = response.Content.ReadAsStringAsync().Result;
-                _reponse = JsonConvert.DeserializeObject<ResponseBody>(playerShips);
+                client.BaseAddress = new Uri("http://localhost:8000");
+                HttpResponseMessage response = client.PutAsJsonAsync("api/Battleship/ShotEnemy/" + point + "", enimiShips).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var playerShips = response.Content.ReadAsStringAsync().Result;
+                    _reponse = JsonConvert.DeserializeObject<ResponseBody>(playerShips);
+                }
+                else
+                {
+                    _reponse = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
                 _reponse = null;
             }
@@ -87,16 +104,23 @@ namespace BattleShipWebClient.Controllers
         public static ResponseBody ShotOnPlayer(Ships playerShips)
         {
             _reponse = new ResponseBody();
-
             client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:8000");
-            HttpResponseMessage response = client.PutAsJsonAsync("/api/Battleship/ShotOnUser", playerShips).Result;
-            if (response.IsSuccessStatusCode)
+
+            try
             {
-                var location = response.Content.ReadAsStringAsync().Result;
-                _reponse = JsonConvert.DeserializeObject<ResponseBody>(location);
+                client.BaseAddress = new Uri("http://localhost:8000");
+                HttpResponseMessage response = client.PutAsJsonAsync("/api/Battleship/ShotOnUser", playerShips).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var location = response.Content.ReadAsStringAsync().Result;
+                    _reponse = JsonConvert.DeserializeObject<ResponseBody>(location);
+                }
+                else
+                {
+                    _reponse = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
                 _reponse = null;
             }

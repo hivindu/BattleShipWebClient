@@ -45,8 +45,6 @@ namespace BattleShipWebClient
                 enemyScore = (int)Session["EnemyScore"];
                 CreateEnemiesGrid();
                 CreatePlayerGrid();
-
-                
             }
             ValueGrid = new int[10, 10];
             GenerateValueGrid();
@@ -296,6 +294,7 @@ namespace BattleShipWebClient
             return values;
         }
 
+        // Check distence between first point and second
         private bool CheckDistence(string id)
         {
             bool res = false;
@@ -350,6 +349,7 @@ namespace BattleShipWebClient
             return res;
         }
 
+        // disable users ship located buttons.
         private void DisableButtons(Ships ships)
         {
             tempShip = ships;
@@ -433,6 +433,7 @@ namespace BattleShipWebClient
             }
         }
 
+        // fire a shot onusers ship
         private bool shotOnPlayer(ResponseBody body) 
         {
             ResponseBody result = body;
