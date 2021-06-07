@@ -15,22 +15,23 @@ namespace BattleShipWebClient
     {
         private Button[,] PlayerGrid;
         private Button[,] EnimiesGrid;
-        private Ships ship;
+        private Ships tempShip;
         private Ships enemyShips;
         private Ships playerShips;
         private bool[,] ShipLocationPlayer;
         private bool[,] ShipLocationEnimy;
         private int[,] ValueGrid;
         private int count = 0;
-        private int score = 0;
-        private int Shis = 3;
+        private int playerScore = 0;
+        private int enemyScore = 0;
+        private int ShipsCount = 3;
         private int temp = 0;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
             {
-                ship = new Ships();
+                tempShip = new Ships();
                 enemyShips = new Ships();
                 PlayerGrid = new Button[10, 10];
                 EnimiesGrid = new Button[10, 10];
@@ -43,8 +44,8 @@ namespace BattleShipWebClient
                 enimy_panel.Visible = false;
                 Session["EnimiesGrid"] = EnimiesGrid;
                 Session["Player"] = PlayerGrid;
-                Session["Ships"] = Shis;
-                Session["Ship"] = ship;
+                Session["Ships"] = ShipsCount;
+                Session["tempShip"] = tempShip;
                 Session["EnemyShipsBool"] = ShipLocationEnimy;
                 Session["EnemyShipSet"] = enemyShips;
                 Session["PlayersShips"] = playerShips;
@@ -53,7 +54,7 @@ namespace BattleShipWebClient
             else {
                 ShipLocationEnimy = (bool[,])Session["EnemyShipsBool"];
                 playerShips = (Ships)Session["PlayersShips"];
-                ship = (Ships)Session["Ship"];
+                tempShip = (Ships)Session["tempShip"];
                 enemyShips = (Ships)Session["EnemyShipSet"];
                 EnimiesGrid = (Button[,])Session["EnimiesGrid"];
                 PlayerGrid = (Button[,])Session["Player"];
@@ -75,50 +76,50 @@ namespace BattleShipWebClient
             bool res = false;
             if (IsPostBack)
             {
-                Shis = (int)Session["Ships"];
-                if (Shis > 0)
+                ShipsCount = (int)Session["Ships"];
+                if (ShipsCount > 0)
                 {
                     var button = (Button)sender;
                     button.Enabled = false;
                     button.BackColor = Color.Orange;
 
                     string id = button.ClientID;
-                    switch (Shis)
+                    switch (ShipsCount)
                     {
                         case 3:
-                            ship.Battleship = FindIndex(id,1); break;
+                            tempShip.Battleship = FindIndex(id,1); break;
                         case 2:
                             res =CheckDistence(id);
                             if (res != true)
                             {
-                                Shis = 3;
+                                ShipsCount = 3;
                                 button.Enabled = true;
                                 button.BackColor = Color.White;
                                 Page.ClientScript.RegisterStartupScript(this.GetType(), "callinvalidIndex", "invalidIndex()", true);
                             }
                             else {
-                                ship.Ship1 = FindIndex(id,1); 
+                                tempShip.destroyerShip1 = FindIndex(id,1); 
                             }
                             break;
                         case 1:
-                            ship.Ship2 = FindIndex(id,1); break;
+                            tempShip.destroyerShip2 = FindIndex(id,1); break;
                     }
-                    Session["Ship"] = ship;
-                    Shis--;
-                    Session["Ships"] = Shis;
+                    Session["tempShip"] = tempShip;
+                    ShipsCount--;
+                    Session["Ships"] = ShipsCount;
                 }
 
-                if (Shis == 0)
+                if (ShipsCount == 0)
                 {   
                     enimy_panel.Visible = true;
-                    ship = BattleshipGameController.GeneratePlayerShips(ship);
-                    playerShips = ship;
+                    tempShip = BattleshipGameController.GeneratePlayerShips(tempShip);
+                    playerShips = tempShip;
                     Session["PlayersShips"] = playerShips;
-                    DisableButtons(ship);
-                    ship = BattleshipGameController.GetEnemiesLocation();
-                    enemyShips = ship;
+                    DisableButtons(tempShip);
+                    tempShip = BattleshipGameController.GetEnemiesLocation();
+                    enemyShips = tempShip;
                     Session["EnemyShipSet"] = enemyShips;
-                    GenerateEnemyShips(ship);
+                    GenerateEnemyShips(tempShip);
                     lblhint.Text = "Click a button on enimis grid to start!";
                 }
             }
@@ -148,18 +149,20 @@ namespace BattleShipWebClient
                 EnimiesGrid[row, column].Enabled = false;
                 EnimiesGrid[row, column].BackColor = Color.Red;
                 lblShot.Text = "HIT";
+                playerScore++;
+                lblScore.Text = Convert.ToString(playerScore);
             }
-
-            ResponseBody body = BattleshipGameController.ShotOnPlayer(playerShips);
 
             while (results != true)
             {
+                ResponseBody body = BattleshipGameController.ShotOnPlayer(playerShips);
+
                 results = shotOnPlayer(body);
             }
 
         }
 
-
+        //Generate Player Button Grid
         private void CreatePlayerGrid()
         {
             var buttonLetter = "";
@@ -191,7 +194,7 @@ namespace BattleShipWebClient
                             buttonLetter = "J"; break;
                     }
 
-                    buttonLetter += c + 1;
+                    buttonLetter += (c + 1);
                     Button btn = FindControl(buttonLetter) as Button;
 
                     if (btn != null)
@@ -236,7 +239,7 @@ namespace BattleShipWebClient
                             buttonLetter = "JJ"; break;
                     }
 
-                    buttonLetter += c + 1;
+                    buttonLetter += (c + 1);
                     Button btn = FindControl(buttonLetter) as Button;
 
                     if (btn != null)
@@ -259,25 +262,27 @@ namespace BattleShipWebClient
                 {
                     for (int c = 0; c < 10; c++)
                     {
-                        col = PlayerGrid[r, c].ClientID;
+                        col = PlayerGrid[r,c].ClientID;
                         if (col == id)
                         {
                             values[0] = r;
                             values[1] = c;
+                            break;
                         }
                     }
                 }
             }
             else {
-                for (int r = 0; r < 10; r++)
+                for (int a = 0; a < 10; a++)
                 {
-                    for (int c = 0; c < 10; c++)
+                    for (int b = 0; b< 10; b++)
                     {
-                        col = EnimiesGrid[r, c].ClientID;
+                        col = EnimiesGrid[a, b].ClientID;
                         if (col == id)
                         {
-                            values[0] = r;
-                            values[1] = c;
+                            values[0] = a;
+                            values[1] = b;
+                            break;
                         }
                     }
                 }
@@ -289,7 +294,7 @@ namespace BattleShipWebClient
         private bool CheckDistence(string id)
         {
             bool res = false;
-            int[] battleShipIndexs = ship.Battleship;
+            int[] battleShipIndexs = tempShip.Battleship;
             int row = battleShipIndexs[0];
             int column = battleShipIndexs[1];
             int rowCount = 0;
@@ -302,7 +307,6 @@ namespace BattleShipWebClient
                     col = PlayerGrid[r, c].ClientID;
                     if (col == id)
                     {
-                        
                         if ((row + 1) > (r + 1))
                         {
                             rowCount = (row + 1) - (r + 1);
@@ -343,11 +347,11 @@ namespace BattleShipWebClient
 
         private void DisableButtons(Ships ships)
         {
-            ship = ships;
+            tempShip = ships;
             ShipLocationPlayer = (bool[,])Session["ShipLocationsPlayer"];
-            int[] battleShipPossitions = ship.Battleship;
-            int[] distroyerShip1 = ship.Ship1;
-            int[] distroyerShip2 = ship.Ship2;
+            int[] battleShipPossitions = tempShip.Battleship;
+            int[] distroyerShip1 = tempShip.destroyerShip1;
+            int[] distroyerShip2 = tempShip.destroyerShip2;
             int column =0, row=0;
 
             for (int i = 0; i < 9; i += 2)
@@ -381,11 +385,11 @@ namespace BattleShipWebClient
 
         private void GenerateEnemyShips(Ships ships)
         {
-            
-            ship = ships;
-            int[] battleShipPossitions = ship.Battleship;
-            int[] distroyerShip1 = ship.Ship1;
-            int[] distroyerShip2 = ship.Ship2;
+
+            tempShip = ships;
+            int[] battleShipPossitions = tempShip.Battleship;
+            int[] distroyerShip1 = tempShip.destroyerShip1;
+            int[] distroyerShip2 = tempShip.destroyerShip2;
             int column = 0, row = 0;
 
             for (int i = 0; i < 9; i += 2)
@@ -430,8 +434,8 @@ namespace BattleShipWebClient
             int returnValue;
             playerShips = (Ships)Session["PlayersShips"];
             int[] battleShip = playerShips.Battleship;
-            int[] distroyerShip1 = playerShips.Ship1;
-            int[] distroyerShip2 = playerShips.Ship2;
+            int[] distroyerShip1 = playerShips.destroyerShip1;
+            int[] distroyerShip2 = playerShips.destroyerShip2;
             bool location = false;
             int column = 0, row = 0;
             bool available = false;
@@ -495,6 +499,8 @@ namespace BattleShipWebClient
                                 PlayerGrid[c, r].BackColor = Color.Red;
                                 ShipLocationPlayer[r, c] = false;
                                 location = true;
+                                enemyScore++;
+                                lblScore1.Text = Convert.ToString(enemyScore);
                             }
                         }
                         else {

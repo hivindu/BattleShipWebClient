@@ -8,7 +8,7 @@ namespace BattleShipWebClient.Models
     public class Ships
     {
         public int[] Battleship { get; set; }
-        public int[] Ship1 { get; set; }
-        public int[] Ship2 { get; set; }
+        public int[] destroyerShip1 { get; set; }
+        public int[] destroyerShip2 { get; set; }
     }
 }
