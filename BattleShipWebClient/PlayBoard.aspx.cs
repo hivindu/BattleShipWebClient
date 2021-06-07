@@ -31,25 +31,7 @@ namespace BattleShipWebClient
         {
             if (!Page.IsPostBack)
             {
-                tempShip = new Ships();
-                enemyShips = new Ships();
-                PlayerGrid = new Button[10, 10];
-                EnimiesGrid = new Button[10, 10];
-                ShipLocationPlayer = new bool[10, 10];
-                ShipLocationEnimy = new bool[10, 10];
-                playerShips = new Ships();
-                CreateEnemiesGrid();
-                CreatePlayerGrid();
-                lblhint.Text = "Please select 3 locations on your grid ( 2nd POINT MUST BE SELECT AFTER 5 POINTS FROM THE 1st POINT IN HORIZONTALLY OR VERTICALLY!)";
-                enimy_panel.Visible = false;
-                Session["EnimiesGrid"] = EnimiesGrid;
-                Session["Player"] = PlayerGrid;
-                Session["Ships"] = ShipsCount;
-                Session["tempShip"] = tempShip;
-                Session["EnemyShipsBool"] = ShipLocationEnimy;
-                Session["EnemyShipSet"] = enemyShips;
-                Session["PlayersShips"] = playerShips;
-                Session["ShipLocationsPlayer"] = ShipLocationPlayer;
+                Restart();
             }
             else {
                 ShipLocationEnimy = (bool[,])Session["EnemyShipsBool"];
@@ -59,8 +41,12 @@ namespace BattleShipWebClient
                 EnimiesGrid = (Button[,])Session["EnimiesGrid"];
                 PlayerGrid = (Button[,])Session["Player"];
                 ShipLocationPlayer = (bool[,])Session["ShipLocationsPlayer"];
+                playerScore = (int)Session["PlayerScore"];
+                enemyScore = (int)Session["EnemyScore"];
                 CreateEnemiesGrid();
                 CreatePlayerGrid();
+
+                
             }
             ValueGrid = new int[10, 10];
             GenerateValueGrid();
@@ -151,13 +137,32 @@ namespace BattleShipWebClient
                 lblShot.Text = "HIT";
                 playerScore++;
                 lblScore.Text = Convert.ToString(playerScore);
+                Session["playerScore"] = playerScore;
+                if (playerScore == 9)
+                {
+                    Response.Redirect("index.aspx");
+                    Restart();
+                }
+                else if (enemyScore == 9)
+                {
+                    Response.Redirect("index.aspx");
+                    Restart();
+                }
             }
 
             while (results != true)
             {
                 ResponseBody body = BattleshipGameController.ShotOnPlayer(playerShips);
 
-                results = shotOnPlayer(body);
+                bool locationValue = shotOnPlayer(body);
+
+                if (locationValue != true)
+                {
+                    results = false;
+                }
+                else {
+                    results = true;
+                }
             }
 
         }
@@ -255,15 +260,15 @@ namespace BattleShipWebClient
         private int[] FindIndex(string id, int type)
         {
             int[] values = new int[2];
-            string col;
+            string buttonId ="";
             if (type > 0)
             {
                 for (int r = 0; r < 10; r++)
                 {
                     for (int c = 0; c < 10; c++)
                     {
-                        col = PlayerGrid[r,c].ClientID;
-                        if (col == id)
+                        buttonId = PlayerGrid[r,c].ClientID;
+                        if (buttonId == id)
                         {
                             values[0] = r;
                             values[1] = c;
@@ -277,8 +282,8 @@ namespace BattleShipWebClient
                 {
                     for (int b = 0; b< 10; b++)
                     {
-                        col = EnimiesGrid[a, b].ClientID;
-                        if (col == id)
+                        buttonId = EnimiesGrid[a, b].ClientID;
+                        if (buttonId == id)
                         {
                             values[0] = a;
                             values[1] = b;
@@ -362,6 +367,7 @@ namespace BattleShipWebClient
                 PlayerGrid[row, column].Enabled = false;
                 PlayerGrid[row, column].BackColor = Color.Orange;
                 ShipLocationPlayer[row, column] = true;
+                
             }
 
             for (int c=0;c<4;c+=2)
@@ -437,8 +443,10 @@ namespace BattleShipWebClient
             int[] distroyerShip1 = playerShips.destroyerShip1;
             int[] distroyerShip2 = playerShips.destroyerShip2;
             bool location = false;
+            bool resultsLocation = false;
             int column = 0, row = 0;
             bool available = false;
+            
 
             for (int r=0; r<10; r++)
             {
@@ -453,8 +461,8 @@ namespace BattleShipWebClient
                         for (int i = 0; i < 9; i += 2)
                         {
                             temp = i + 1;
-                            row = battleShip[temp];
-                            column = battleShip[i];
+                            row = battleShip[i];
+                            column = battleShip[temp];
                             if (r == row && c == column)
                             {
                                 available = true;
@@ -491,22 +499,48 @@ namespace BattleShipWebClient
                         {
                             if (location = !true)
                             {
-                                location = false;
+                                resultsLocation = false;
                             }
                             else
                             {
-                                PlayerGrid[c, r].Enabled = false;
-                                PlayerGrid[c, r].BackColor = Color.Red;
+                                PlayerGrid[r,c].Enabled = false;
+                                PlayerGrid[r,c].BackColor = Color.Red;
                                 ShipLocationPlayer[r, c] = false;
-                                location = true;
+                                resultsLocation = true;
                                 enemyScore++;
                                 lblScore1.Text = Convert.ToString(enemyScore);
+                                Session["EnemyScore"] = enemyScore;
+                                r = 10;
+                                c = 10;
+                                if (playerScore == 9)
+                                {
+                                    Response.Redirect("index.aspx");
+                                    Restart();
+                                }
+                                else if (enemyScore == 9)
+                                {
+                                    Response.Redirect("index.aspx");
+                                    Restart();
+                                   
+                                }
                             }
                         }
                         else {
-                            PlayerGrid[c, r].Enabled = false;
-                            PlayerGrid[c,r ].BackColor = Color.Blue;
-                            location = true;
+                            location = PlayerGrid[r, c].Enabled;
+                            if (location != true)
+                            {
+                                resultsLocation = false;
+                                r = 10;
+                                c = 10;
+                            }
+                            else {
+                                PlayerGrid[r, c].Enabled = false;
+                                PlayerGrid[r, c].BackColor = Color.Blue;
+                                resultsLocation = true;
+                                r = 10;
+                                c = 10;
+                            }
+                           
                         }
                         
                     }
@@ -514,8 +548,33 @@ namespace BattleShipWebClient
             }
             Session["Player"] = PlayerGrid;
             Session["ShipLocationsPlayer"] = ShipLocationPlayer;
-            return location;
+            return resultsLocation;
 
+        }
+
+        private void Restart()
+        {
+            tempShip = new Ships();
+            enemyShips = new Ships();
+            PlayerGrid = new Button[10, 10];
+            EnimiesGrid = new Button[10, 10];
+            ShipLocationPlayer = new bool[10, 10];
+            ShipLocationEnimy = new bool[10, 10];
+            playerShips = new Ships();
+            CreateEnemiesGrid();
+            CreatePlayerGrid();
+            lblhint.Text = "Please select 3 locations on your grid ( 2nd POINT MUST BE SELECT AFTER 5 POINTS FROM THE 1st POINT IN HORIZONTALLY OR VERTICALLY!)";
+            enimy_panel.Visible = false;
+            Session["EnimiesGrid"] = EnimiesGrid;
+            Session["Player"] = PlayerGrid;
+            Session["Ships"] = ShipsCount;
+            Session["tempShip"] = tempShip;
+            Session["EnemyShipsBool"] = ShipLocationEnimy;
+            Session["EnemyShipSet"] = enemyShips;
+            Session["PlayersShips"] = playerShips;
+            Session["ShipLocationsPlayer"] = ShipLocationPlayer;
+            Session["PlayerScore"] = playerScore;
+            Session["EnemyScore"] = enemyScore;
         }
     }
 }

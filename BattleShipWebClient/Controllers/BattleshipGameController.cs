@@ -25,18 +25,23 @@ namespace BattleShipWebClient.Controllers
             ship = new Ships();
             Ships userShips = ships;
             client = new HttpClient();
-
-            client.BaseAddress = new Uri("http://localhost:8000");
-            var response = client.PostAsJsonAsync("api/Battleship/GenerateUserShips", userShips).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                var playerShips = response.Content.ReadAsStringAsync().Result;
-                ship = JsonConvert.DeserializeObject<Ships>(playerShips);
-            }
-            else
+            try {
+                client.BaseAddress = new Uri("http://localhost:8000");
+                var response = client.PostAsJsonAsync("api/Battleship/GenerateUserShips", userShips).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var playerShips = response.Content.ReadAsStringAsync().Result;
+                    ship = JsonConvert.DeserializeObject<Ships>(playerShips);
+                }
+                else
+                {
+                    ship = null;
+                }
+            } catch (Exception ex) 
             {
                 ship = null;
             }
+            
 
             return ship;
         }

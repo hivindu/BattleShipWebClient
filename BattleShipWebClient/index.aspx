@@ -31,10 +31,20 @@
                 </center>
                 
             </div>
-            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                
+            </div>
         </div>
         <div class="row">
-            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <asp:Panel ID="scorePanel" runat="server">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <asp:Label ID="lblWinnder" runat="server" Font-Bold="True" Font-Names="ROG Fonts" ForeColor="White"></asp:Label> <asp:Label ID="Label1" runat="server" Text=" Won the Game!" Font-Bold="True" ForeColor="#FFFFCC"></asp:Label>
+                        </div>
+                    </div>
+                </asp:Panel>
+            </div>
             <div class="col-md-4">
                 <center>
                 <asp:Button ID="btnPlay" runat="server" Text="Play" Font-Bold="True" Font-Names="ROG Fonts" CssClass="btn btn-success roundedBorder" OnClick="btnPlay_Click" />
